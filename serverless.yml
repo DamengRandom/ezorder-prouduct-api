@@ -1,0 +1,72 @@
+# Thank you for Serverless support (Learnt from: https://www.youtube.com/watch?v=Pa99PT16tmw)!
+
+service: ezorder-apis
+
+custom:
+  settings:
+    PRODUCTS_TABLE: products
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: ap-southeast-2
+  environment: ${self:custom.settings}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.PRODUCTS_TABLE}"
+
+functions:
+  createProduct:
+    handler: handler.createProduct
+    events:
+    - http:
+        path: /products/{userId}
+        method: post
+  getProductsByUserId:
+    handler: handler.getProductsByUserId
+    events:
+      - http:
+          path: /user/{userId}/products
+          method: get
+  getProduct:
+    handler: handler.getProduct
+    events:
+      - http:
+          path: /product/{id}
+          method: get
+  updateProduct:
+    handler: handler.updateProduct
+    events:
+      - http:
+          path: /product/{id}
+          method: put
+  deleteProduct:
+    handler: handler.deleteProduct
+    events:
+      - http:
+          path: /product/{id}
+          method: delete
+
+resources:
+  Resources:
+    ProductsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        AttributeDefinitions:
+        - AttributeName: "id"
+          AttributeType: "S"
+        KeySchema:
+        - AttributeName: "id"
+          KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.settings.PRODUCTS_TABLE}
