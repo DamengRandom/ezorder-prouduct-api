@@ -30,33 +30,47 @@ functions:
     - http:
         path: /products/{userId}
         method: post
+        cors: true
   getProductsByUserId:
     handler: handler.getProductsByUserId
     events:
       - http:
           path: /user/{userId}/products
           method: get
+          cors: true
   getProduct:
     handler: handler.getProduct
     events:
       - http:
           path: /product/{id}
           method: get
+          cors: true
   updateProduct:
     handler: handler.updateProduct
     events:
       - http:
           path: /product/{id}
           method: put
+          cors: true
   deleteProduct:
     handler: handler.deleteProduct
     events:
       - http:
           path: /product/{id}
           method: delete
+          cors: true
 
 resources:
   Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
     ProductsTable:
       Type: AWS::DynamoDB::Table
       Properties:
