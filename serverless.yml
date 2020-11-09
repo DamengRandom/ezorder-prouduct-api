@@ -1,10 +1,10 @@
 # Thank you for Serverless support (Learnt from: https://www.youtube.com/watch?v=Pa99PT16tmw)!
 
-service: tests-apis
+service: ezorder-apis
 
 custom:
   settings:
-    TESTS_TABLE: tests
+    PRODUCTS_TABLE: products
 
 provider:
   name: aws
@@ -21,42 +21,42 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
-        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.TESTS_TABLE}"
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.settings.PRODUCTS_TABLE}"
 
 functions:
   createProduct:
     handler: handler.createProduct
     events:
     - http:
-        path: /tests/{userId}
+        path: /products/{userId}
         method: post
         cors: true
   getProductsByUserId:
     handler: handler.getProductsByUserId
     events:
       - http:
-          path: /user/{userId}/tests
+          path: /user/{userId}/products
           method: get
           cors: true
   getProduct:
     handler: handler.getProduct
     events:
       - http:
-          path: /test/{id}
+          path: /product/{id}
           method: get
           cors: true
   updateProduct:
     handler: handler.updateProduct
     events:
       - http:
-          path: /test/{id}
+          path: /product/{id}
           method: put
           cors: true
   deleteProduct:
     handler: handler.deleteProduct
     events:
       - http:
-          path: /test/{id}
+          path: /product/{id}
           method: delete
           cors: true
 
@@ -83,4 +83,4 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:custom.settings.TESTS_TABLE}
+        TableName: ${self:custom.settings.PRODUCTS_TABLE}
